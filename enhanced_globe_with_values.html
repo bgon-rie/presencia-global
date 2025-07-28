@@ -1,0 +1,281 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Enhanced Globe with Arc Values</title>
+  <style>
+    html, body { margin: 0; height: 100%; overflow: hidden; background-color: black; }
+    #globeViz { width: 100%; height: 100%; }
+  </style>
+</head>
+<body>
+  <div id="globeViz"></div>
+
+  <script src="https://unpkg.com/three"></script>
+  <script src="https://unpkg.com/globe.gl"></script>
+
+  <script>
+    // Enhanced arcsData with color and altitude
+    const arcsData = [
+  {
+    startLat: 40.207654,
+    startLng: -3.703536,
+    endLat: 51.050577,
+    endLng: 10.364372,
+    label: "Spain → Germany: 13.86",
+    value: 13.86,
+    color: "#ed3022",
+    altitude: 0.378
+  },
+  {
+    startLat: 40.207654,
+    startLng: -3.703536,
+    endLat: 24.086558,
+    endLng: 44.663175,
+    label: "Spain → Saudi Arabia: 1.06",
+    value: 1.06,
+    color: "#fffac1",
+    altitude: 0.114
+  },
+  {
+    startLat: 40.207654,
+    startLng: -3.703536,
+    endLat: 28.055993,
+    endLng: 2.631188,
+    label: "Spain → Algeria: 0.52",
+    value: 0.52,
+    color: "#fffecb",
+    altitude: 0.103
+  },
+  {
+    startLat: 40.207654,
+    startLng: -3.703536,
+    endLat: -34.683988,
+    endLng: -64.762615,
+    label: "Spain → Argentina: 5.75",
+    value: 5.75,
+    color: "#fed16e",
+    altitude: 0.211
+  },
+  {
+    startLat: 40.207654,
+    startLng: -3.703536,
+    endLat: -10.639049,
+    endLng: -53.215734,
+    label: "Spain → Brazil: 7.40",
+    value: 7.40,
+    color: "#feb651",
+    altitude: 0.245
+  },
+  {
+    startLat: 40.207654,
+    startLng: -3.703536,
+    endLat: 60.417767,
+    endLng: -96.548627,
+    label: "Spain → Canada: 1.66",
+    value: 1.66,
+    color: "#fff6b6",
+    altitude: 0.126
+  },
+  {
+    startLat: 40.207654,
+    startLng: -3.703536,
+    endLat: 36.691407,
+    endLng: 103.378050,
+    label: "Spain → China: 5.20",
+    value: 5.20,
+    color: "#fed977",
+    altitude: 0.199
+  },
+  {
+    startLat: 40.207654,
+    startLng: -3.703536,
+    endLat: 44.743732,
+    endLng: -103.629563,
+    label: "Spain → United States: 19.08",
+    value: 19.08,
+    color: "#8f0026",
+    altitude: 0.486
+  },
+  {
+    startLat: 40.207654,
+    startLng: -3.703536,
+    endLat: 66.031722,
+    endLng: 95.641377,
+    label: "Spain → Russian Federation: 0.79",
+    value: 0.79,
+    color: "#fffcc5",
+    altitude: 0.108
+  },
+  {
+    startLat: 40.207654,
+    startLng: -3.703536,
+    endLat: 42.955140,
+    endLng: -6.676141,
+    label: "Spain → France: 18.97",
+    value: 18.97,
+    color: "#930026",
+    altitude: 0.484
+  },
+  {
+    startLat: 40.207654,
+    startLng: -3.703536,
+    endLat: 22.776643,
+    endLng: 79.563911,
+    label: "Spain → India: 2.10",
+    value: 2.10,
+    color: "#fff3ae",
+    altitude: 0.135
+  },
+  {
+    startLat: 40.207654,
+    startLng: -3.703536,
+    endLat: 31.432979,
+    endLng: 34.991138,
+    label: "Spain → Israel: 0.69",
+    value: 0.69,
+    color: "#fffdc8",
+    altitude: 0.106
+  },
+  {
+    startLat: 40.207654,
+    startLng: -3.703536,
+    endLat: 42.715686,
+    endLng: 12.201049,
+    label: "Spain → Italy: 10.59",
+    value: 10.59,
+    color: "#fd8038",
+    altitude: 0.311
+  },
+  {
+    startLat: 40.207654,
+    startLng: -3.703536,
+    endLat: 37.460880,
+    endLng: 137.660006,
+    label: "Spain → Japan: 1.26",
+    value: 1.26,
+    color: "#fff9bd",
+    altitude: 0.118
+  },
+  {
+    startLat: 40.207654,
+    startLng: -3.703536,
+    endLat: 29.766859,
+    endLng: -8.727848,
+    label: "Spain → Morocco: 4.34",
+    value: 4.34,
+    color: "#fee085",
+    altitude: 0.182
+  },
+  {
+    startLat: 40.207654,
+    startLng: -3.703536,
+    endLat: 23.924155,
+    endLng: -102.170985,
+    label: "Spain → Mexico: 9.62",
+    value: 9.62,
+    color: "#fd933f",
+    altitude: 0.291
+  },
+  {
+    startLat: 40.207654,
+    startLng: -3.703536,
+    endLat: 9.590946,
+    endLng: 8.079587,
+    label: "Spain → Nigeria: 0.39",
+    value: 0.39,
+    color: "#ffffcc",
+    altitude: 0.1
+  },
+  {
+    startLat: 40.207654,
+    startLng: -3.703536,
+    endLat: 39.606210,
+    endLng: -8.528130,
+    label: "Spain → Portugal: 9.76",
+    value: 9.76,
+    color: "#fd923e",
+    altitude: 0.294
+  },
+  {
+    startLat: 40.207654,
+    startLng: -3.703536,
+    endLat: 54.011650,
+    endLng: -2.758142,
+    label: "Spain → United Kingdom: 19.75",
+    value: 19.75,
+    color: "#800026",
+    altitude: 0.5
+  },
+  {
+    startLat: 40.207654,
+    startLng: -3.703536,
+    endLat: 36.373367,
+    endLng: 127.834771,
+    label: "Spain → Republic of Korea: 0.94",
+    value: 0.94,
+    color: "#fffbc2",
+    altitude: 0.111
+  },
+  {
+    startLat: 40.207654,
+    startLng: -3.703536,
+    endLat: -28.974209,
+    endLng: 25.193438,
+    label: "Spain → South Africa: 0.59",
+    value: 0.59,
+    color: "#fffec9",
+    altitude: 0.104
+  },
+];
+
+    const countriesData = [
+      {"lat": 40.207654, "lng": -3.703536, "name": "Spain"},
+      {"lat": 51.050577, "lng": 10.364372, "name": "Germany"},
+      {"lat": 24.086558, "lng": 44.663175, "name": "Saudi Arabia"},
+      {"lat": 28.055993, "lng": 2.631188, "name": "Algeria"},
+      {"lat": -34.683988, "lng": -64.762615, "name": "Argentina"},
+      {"lat": -10.639049, "lng": -53.215734, "name": "Brazil"},
+      {"lat": 60.417767, "lng": -96.548627, "name": "Canada"},
+      {"lat": 36.691407, "lng": 103.378050, "name": "China"},
+      {"lat": 44.743732, "lng": -103.629563, "name": "United States"},
+      {"lat": 66.031722, "lng": 95.641377, "name": "Russian Federation"},
+      {"lat": 42.955140, "lng": -6.676141, "name": "France"},
+      {"lat": 22.776643, "lng": 79.563911, "name": "India"},
+      {"lat": 31.432979, "lng": 34.991138, "name": "Israel"},
+      {"lat": 42.715686, "lng": 12.201049, "name": "Italy"},
+      {"lat": 37.460880, "lng": 137.660006, "name": "Japan"},
+      {"lat": 29.766859, "lng": -8.727848, "name": "Morocco"},
+      {"lat": 23.924155, "lng": -102.170985, "name": "Mexico"},
+      {"lat": 9.590946, "lng": 8.079587, "name": "Nigeria"},
+      {"lat": 39.606210, "lng": -8.528130, "name": "Portugal"},
+      {"lat": 54.011650, "lng": -2.758142, "name": "United Kingdom"},
+      {"lat": 36.373367, "lng": 127.834771, "name": "Republic of Korea"}
+    ];
+
+    const globe = Globe()
+      .globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+      .arcsData(arcsData)
+      .arcLabel(d => d.label)
+      .arcStartLat(d => d.startLat)
+      .arcStartLng(d => d.startLng)
+      .arcEndLat(d => d.endLat)
+      .arcEndLng(d => d.endLng)
+      .arcAltitude(d => d.altitude)
+      .arcStroke(1)
+      .arcColor(d => d.color)
+      .arcDashLength(0.4)
+      .arcDashGap(1)
+      .arcDashAnimateTime(2000)
+      .pointsData(countriesData)
+      .pointLat(d => d.lat)
+      .pointLng(d => d.lng)
+      .pointLabel(d => d.name)
+      .pointColor(() => '#ffffff')
+      .pointAltitude(0.01)
+      .pointRadius(0.3)
+      (document.getElementById('globeViz'));
+  </script>
+</body>
+</html>
