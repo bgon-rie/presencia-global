@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>Interactive Globe with Filters</title>
+<style>
+    html, body { margin: 0; height: 100%; overflow: hidden; background-color: black; }
+    #globeViz { position: absolute; top: 60px; bottom: 0; width: 100%; }
+    #controls {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px;
+      border-radius: 8px;
+      font-family: sans-serif;
+    }
+    #countrySelect, #valueRange { width: 200px; }
+  </style>
+</head>
+<body>
+<div id="controls">
+<label for="countrySelect">Filter by country:</label><br/>
+<select id="countrySelect">
+<option value="All">All</option>
+<option value="Spain">Spain</option>
+</select><br/><br/>
+<label for="valueRange">Minimum value:</label><br/>
+<input id="valueRange" max="20" min="0" step="0.1" type="range" value="0"/>
+<span id="valueLabel">0</span>
+<br/><br/>
+<label for="maxValue">Maximum value:</label><br/>
+<input id="maxValue" max="20" min="0" step="0.1" type = "range" value="20">
+<span id="maxValueLabel"> 20 </span>
+</div>
+<div id="globeViz"></div>
+<script src="https://unpkg.com/three"></script>
+<script src="https://unpkg.com/globe.gl"></script>
+<script>
+    const allArcs = [{"startLat": 40.20765398401546, "startLng": -3.703536252532036, "endLat": 51.05057720039199, "endLng": 10.36437158929261, "label": "Spain \u2192 Germany: 13.86890558852526", "value": 13.86890558852526, "start_country": "Spain"}, {"startLat": 40.20765398401546, "startLng": -3.703536252532036, "endLat": 24.08655798504141, "endLng": 44.66317480529125, "label": "Spain \u2192 Saudi Arabia: 1.066469357745497", "value": 1.066469357745497, "start_country": "Spain"}, {"startLat": 40.20765398401546, "startLng": -3.703536252532036, "endLat": 28.05599342211892, "endLng": 2.631188413783473, "label": "Spain \u2192 Algeria: 0.5235227335767076", "value": 0.5235227335767076, "start_country": "Spain"}, {"startLat": 40.20765398401546, "startLng": -3.703536252532036, "endLat": -34.68398767122581, "endLng": -64.76261489391939, "label": "Spain \u2192 Argentina: 5.758674918149612", "value": 5.758674918149612, "start_country": "Spain"}, {"startLat": 40.20765398401546, "startLng": -3.703536252532036, "endLat": -10.63904876733271, "endLng": -53.2157339237413, "label": "Spain \u2192 Brazil: 7.402814247790717", "value": 7.402814247790717, "start_country": "Spain"}, {"startLat": 40.20765398401546, "startLng": -3.703536252532036, "endLat": 60.41776698438469, "endLng": -96.5486267280136, "label": "Spain \u2192 Canada: 1.662727634768562", "value": 1.662727634768562, "start_country": "Spain"}, {"startLat": 40.20765398401546, "startLng": -3.703536252532036, "endLat": 36.69140669345146, "endLng": 103.3780495397927, "label": "Spain \u2192 China: 5.202492776057321", "value": 5.202492776057321, "start_country": "Spain"}, {"startLat": 40.20765398401546, "startLng": -3.703536252532036, "endLat": 44.74373159082126, "endLng": -103.6295628097442, "label": "Spain \u2192 United States: 19.08095296717956", "value": 19.08095296717956, "start_country": "Spain"}, {"startLat": 40.20765398401546, "startLng": -3.703536252532036, "endLat": 66.03172193364617, "endLng": 95.6413766734594, "label": "Spain \u2192 Russian Federation: 0.792446918872512", "value": 0.792446918872512, "start_country": "Spain"}, {"startLat": 40.20765398401546, "startLng": -3.703536252532036, "endLat": 46.2276, "endLng": 2.2137, "label": "Spain \u2192 France: 18.97049985216367", "value": 18.97049985216367, "start_country": "Spain"}, {"startLat": 40.20765398401546, "startLng": -3.703536252532036, "endLat": 22.77664303960867, "endLng": 79.56391093181026, "label": "Spain \u2192 India: 2.102359871390464", "value": 2.102359871390464, "start_country": "Spain"}, {"startLat": 40.20765398401546, "startLng": -3.703536252532036, "endLat": 31.43297864225285, "endLng": 34.99113819680126, "label": "Spain \u2192 Israel: 0.6912272815637607", "value": 0.6912272815637607, "start_country": "Spain"}, {"startLat": 40.20765398401546, "startLng": -3.703536252532036, "endLat": 42.71568614580387, "endLng": 12.20104850473177, "label": "Spain \u2192 Italy: 10.5978197847662", "value": 10.5978197847662, "start_country": "Spain"}, {"startLat": 40.20765398401546, "startLng": -3.703536252532036, "endLat": 37.46088047559287, "endLng": 137.6600062659808, "label": "Spain \u2192 Japan: 1.268639662497341", "value": 1.268639662497341, "start_country": "Spain"}, {"startLat": 40.20765398401546, "startLng": -3.703536252532036, "endLat": 29.76685913718276, "endLng": -8.727847752068008, "label": "Spain \u2192 Morocco: 4.341492365500276", "value": 4.341492365500276, "start_country": "Spain"}, {"startLat": 40.20765398401546, "startLng": -3.703536252532036, "endLat": 23.92415518486322, "endLng": -102.1709853239584, "label": "Spain \u2192 Mexico: 9.624775734992502", "value": 9.624775734992502, "start_country": "Spain"}, {"startLat": 40.20765398401546, "startLng": -3.703536252532036, "endLat": 9.590945570096183, "endLng": 8.079586854238341, "label": "Spain \u2192 Nigeria: 0.3945285709204298", "value": 0.3945285709204298, "start_country": "Spain"}, {"startLat": 40.20765398401546, "startLng": -3.703536252532036, "endLat": 39.60621030811328, "endLng": -8.528130281259472, "label": "Spain \u2192 Portugal: 9.768648261749592", "value": 9.768648261749592, "start_country": "Spain"}, {"startLat": 40.20765398401546, "startLng": -3.703536252532036, "endLat": 54.01164974612877, "endLng": -2.758142056330439, "label": "Spain \u2192 United Kingdom: 19.75426542981921", "value": 19.75426542981921, "start_country": "Spain"}, {"startLat": 40.20765398401546, "startLng": -3.703536252532036, "endLat": 36.37336722732972, "endLng": 127.834771148163, "label": "Spain \u2192 Republic of Korea: 0.9405432057895327", "value": 0.9405432057895327, "start_country": "Spain"}, {"startLat": 40.20765398401546, "startLng": -3.703536252532036, "endLat": -28.97420851444112, "endLng": 25.1934382241476, "label": "Spain \u2192 South Africa: 0.5973814923388339", "value": 0.5973814923388339, "start_country": "Spain"}];
+
+    const globe = Globe()
+      .globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+      .arcsData(allArcs)
+      .arcLabel(d => d.label)
+      .arcStartLat(d => d.startLat)
+      .arcStartLng(d => d.startLng)
+      .arcEndLat(d => d.endLat)
+      .arcEndLng(d => d.endLng)
+      .arcAltitude(d => 0.2 + d.value * 0.01)
+      .arcStroke(d => 0.2 + d.value * 0.08)
+      .arcColor(() => '#ffcc00')
+      .arcDashLength(0.4)
+      .arcDashGap(1)
+      .arcDashAnimateTime(3000)
+      (document.getElementById('globeViz'));
+
+    // Filter logic
+    const countrySelect = document.getElementById('countrySelect');
+    const minValueSlider = document.getElementById("minValue");
+    const maxValueSlider = document.getElementById("maxValue");
+    const minValueLabel = document.getElementById("minValueLabel");
+    const maxValueLabel = document.getElementById("maxValueLabel");
+
+    function updateGlobe() {
+      const selectedCountry = countrySelect.value;
+      const minValue = parseFloat(valueRange.value);
+      const maxVal = parseFloat(maxValueSlider.value);
+      valueLabel.textContent = minValue;
+
+      const filtered = allArcs.filter(d =>
+        (selectedCountry === "All" || d.end_country === selectedCountry) &&
+        d.value >= minValue &&
+        d.value <= maxVal
+      );
+
+      globe.arcsData(filtered);
+    }
+
+    countrySelect.addEventListener('change', updateGlobe);
+    valueRange.addEventListener('input', updateGlobe);
+    maxValueSlider.addEventListener("input", updateGlobe);
+  </script>
+</body>
+</html>
